@@ -25,7 +25,7 @@ CACHE_MATCH_IDS_DIR = CACHE_REGION_DIR / "match_ids"
 CACHE_MATCHES_DIR   = CACHE_REGION_DIR / "matches"
 
 for _d in (CACHE_SUMMONERS_DIR, CACHE_MATCH_IDS_DIR, CACHE_MATCHES_DIR, OUTPUT_DIR):
-    _d.mkdir(parents=True, exist_ok=True)
+    os.makedirs(_d, exist_ok=True)
 
 # ── API Key ───────────────────────────────────────────────────────────────────
 load_dotenv(BASE_DIR / ".env")
