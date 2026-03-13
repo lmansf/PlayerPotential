@@ -1,5 +1,5 @@
 """
-PlayerPotential — NA Top-1000 Ranked Solo Stats
+PlayerPotential — EUW Top-1000 Ranked Solo Stats
 ================================================
 
 Usage
@@ -40,24 +40,32 @@ log = logging.getLogger(__name__)
 
 
 def _parse_args() -> argparse.Namespace:
-    p = argparse.ArgumentParser(description="Fetch NA top-ladder LoL stats.")
+    p = argparse.ArgumentParser(description=f"Fetch {config.REGION_LABEL.upper()} top-ladder LoL stats.")
     p.add_argument("--top", type=int, default=config.TOP_N_PLAYERS, help="Number of players")
     p.add_argument("--concurrency", type=int, default=config.MAX_CONCURRENCY, help="Max concurrent requests")
     p.add_argument("--no-parquet", action="store_true", help="Skip Parquet output")
     p.add_argument("--csv", action="store_true", help="Also write CSV alongside Parquet")
+    p.add_argument(
+        "--batch-size",
+        type=int,
+        default=0,
+        metavar="N",
+        help="Fetch matches in batches of N (0 = no limit, default). Useful on laptops.",
+    )
     return p.parse_args()
 
 
 def _write_outputs(df: pd.DataFrame, no_parquet: bool, also_csv: bool) -> None:
     out_dir = config.OUTPUT_DIR
+    base_name = f"{config.REGION_LABEL.lower()}_top{config.TOP_N_PLAYERS}_stats"
 
     if not no_parquet:
-        parquet_path = out_dir / "na_top1000_stats.parquet"
+        parquet_path = out_dir / f"{base_name}.parquet"
         df.to_parquet(parquet_path, index=True)
         log.info("Parquet written → %s", parquet_path)
 
     if no_parquet or also_csv:
-        csv_path = out_dir / "na_top1000_stats.csv"
+        csv_path = out_dir / f"{base_name}.csv"
         df.to_csv(csv_path, index=True)
         log.info("CSV written    → %s", csv_path)
 
@@ -90,7 +98,7 @@ async def run(args: argparse.Namespace) -> None:
         # ── 3. Match details ─────────────────────────────────────────────────
         log.info("=" * 60)
         log.info("Phase 3/3 — Downloading match details")
-        await fetch_matches(client, match_id_map)
+        await fetch_matches(client, match_id_map, batch_size=args.batch_size)
 
     # ── 5. Compute stats (CPU-only, no network) ───────────────────────────────
     log.info("=" * 60)

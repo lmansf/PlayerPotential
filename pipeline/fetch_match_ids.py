@@ -2,7 +2,8 @@
 Fetches the full list of ranked solo match IDs for each player since the
 current season start, using paginated calls to Match-V5.
 
-Results cached to cache/match_ids/{puuid}.json — re-runs skip cached players.
+Results are cached under cache/<platform_region>/match_ids/{puuid}.json,
+so re-runs skip players already cached for the configured platform.
 """
 
 import json

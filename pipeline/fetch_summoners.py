@@ -1,8 +1,8 @@
 """
 Resolves summonerId → puuid for each ladder entry.
 
-Results are cached to cache/summoners/{summonerId}.json so that re-runs only
-hit the API for new players.
+Results are cached under cache/<platform_region>/summoners/{summonerId}.json
+so that re-runs only hit the API for new players.
 """
 
 import asyncio

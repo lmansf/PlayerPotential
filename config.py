@@ -13,9 +13,16 @@ BASE_DIR = Path(__file__).parent
 CACHE_DIR = BASE_DIR / "cache"
 OUTPUT_DIR = BASE_DIR / "output"
 
-CACHE_SUMMONERS_DIR = CACHE_DIR / "summoners"
-CACHE_MATCH_IDS_DIR = CACHE_DIR / "match_ids"
-CACHE_MATCHES_DIR   = CACHE_DIR / "matches"
+# ── Region selection ──────────────────────────────────────────────────────────
+# EUW routing: platform endpoints use euw1, Match-V5 uses europe.
+PLATFORM_REGION: str = "euw1"
+REGIONAL_ROUTING: str = "europe"
+REGION_LABEL: str = "euw"
+
+CACHE_REGION_DIR = CACHE_DIR / PLATFORM_REGION
+CACHE_SUMMONERS_DIR = CACHE_REGION_DIR / "summoners"
+CACHE_MATCH_IDS_DIR = CACHE_REGION_DIR / "match_ids"
+CACHE_MATCHES_DIR   = CACHE_REGION_DIR / "matches"
 
 for _d in (CACHE_SUMMONERS_DIR, CACHE_MATCH_IDS_DIR, CACHE_MATCHES_DIR, OUTPUT_DIR):
     _d.mkdir(parents=True, exist_ok=True)
@@ -25,8 +32,8 @@ load_dotenv(BASE_DIR / ".env")
 RIOT_API_KEY: str = os.environ["RIOT_API_KEY"]
 
 # ── Riot API hosts ────────────────────────────────────────────────────────────
-PLATFORM_HOST  = "https://na1.api.riotgames.com"   # League-V4, Summoner-V4
-REGIONAL_HOST  = "https://americas.api.riotgames.com"  # Match-V5
+PLATFORM_HOST  = f"https://{PLATFORM_REGION}.api.riotgames.com"   # League-V4, Summoner-V4
+REGIONAL_HOST  = f"https://{REGIONAL_ROUTING}.api.riotgames.com"  # Match-V5
 
 # ── Season / filter constants ─────────────────────────────────────────────────
 # Season 2026 Split 1 start: January 8, 2026 00:00 UTC

@@ -1,5 +1,5 @@
 """
-Fetches the top-N players from the NA ranked solo/duo ladder.
+Fetches the top-N players from the configured ranked solo/duo ladder.
 
 Pulls Challenger → Grandmaster → Master (in that order) and merges the lists,
 sorted by leaguePoints descending, returning the top TOP_N_PLAYERS entries.

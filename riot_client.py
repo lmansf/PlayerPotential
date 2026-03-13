@@ -106,7 +106,7 @@ class RiotClient:
     Usage::
 
         async with RiotClient() as client:
-            data = await client.get("https://na1.api.riotgames.com/...")
+            data = await client.get("https://<platform>.api.riotgames.com/...")
     """
 
     def __init__(self, max_concurrency: int = MAX_CONCURRENCY) -> None:
