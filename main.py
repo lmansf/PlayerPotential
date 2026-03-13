@@ -54,7 +54,23 @@ def _parse_args() -> argparse.Namespace:
         metavar="N",
         help="Fetch matches in batches of N (0 = no limit, default). Useful on laptops.",
     )
-    return p.parse_args()
+    args, unknown = p.parse_known_args()
+
+    # Notebook kernels (Databricks/Jupyter) inject "-f <connection.json>".
+    # Ignore only that pair and keep strict validation for everything else.
+    filtered_unknown: list[str] = []
+    i = 0
+    while i < len(unknown):
+        if unknown[i] == "-f":
+            i += 2
+            continue
+        filtered_unknown.append(unknown[i])
+        i += 1
+
+    if filtered_unknown:
+        p.error(f"unrecognized arguments: {' '.join(filtered_unknown)}")
+
+    return args
 
 
 def _write_outputs(df: pd.DataFrame, no_parquet: bool, also_csv: bool) -> None:
