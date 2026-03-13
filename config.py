@@ -9,7 +9,7 @@ from pathlib import Path
 from dotenv import load_dotenv
 
 # ── Paths ────────────────────────────────────────────────────────────────────
-BASE_DIR = Path(os.getenv("PLAYER_POTENTIAL_BASE_DIR", "/dbfs/PlayerPotential"))
+BASE_DIR = Path(os.getenv("PLAYER_POTENTIAL_BASE_DIR", "/tmp/PlayerPotential"))
 CACHE_DIR = BASE_DIR / "cache"
 OUTPUT_DIR = BASE_DIR / "output"
 
@@ -28,7 +28,9 @@ for _d in (CACHE_SUMMONERS_DIR, CACHE_MATCH_IDS_DIR, CACHE_MATCHES_DIR, OUTPUT_D
     os.makedirs(_d, exist_ok=True)
 
 # ── API Key ───────────────────────────────────────────────────────────────────
-load_dotenv(BASE_DIR / ".env")
+_env_file = BASE_DIR / ".env"
+if _env_file.exists():
+    load_dotenv(_env_file)
 RIOT_API_KEY: str = os.environ["RIOT_API_KEY"]
 
 # ── Riot API hosts ────────────────────────────────────────────────────────────
