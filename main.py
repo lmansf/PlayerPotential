@@ -22,6 +22,8 @@ import sys
 import time
 from pathlib import Path
 
+import nest_asyncio
+
 import pandas as pd
 
 import config
@@ -119,6 +121,7 @@ async def run(args: argparse.Namespace) -> None:
 
 def main() -> None:
     args = _parse_args()
+    nest_asyncio.apply()
     asyncio.run(run(args))
 
 

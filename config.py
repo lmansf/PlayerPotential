@@ -9,7 +9,7 @@ from pathlib import Path
 from dotenv import load_dotenv
 
 # ── Paths ────────────────────────────────────────────────────────────────────
-BASE_DIR = Path(__file__).parent
+BASE_DIR = Path(os.getenv("PLAYER_POTENTIAL_BASE_DIR", "/dbfs/PlayerPotential"))
 CACHE_DIR = BASE_DIR / "cache"
 OUTPUT_DIR = BASE_DIR / "output"
 
