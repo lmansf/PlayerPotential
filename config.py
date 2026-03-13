@@ -28,10 +28,46 @@ for _d in (CACHE_SUMMONERS_DIR, CACHE_MATCH_IDS_DIR, CACHE_MATCHES_DIR, OUTPUT_D
     os.makedirs(_d, exist_ok=True)
 
 # ── API Key ───────────────────────────────────────────────────────────────────
-_env_file = BASE_DIR / ".env"
-if _env_file.exists():
-    load_dotenv(_env_file)
-RIOT_API_KEY: str = os.environ["RIOT_API_KEY"]
+def _resolve_riot_api_key() -> str:
+    """Resolve RIOT_API_KEY from env var or one of several .env locations."""
+    key = os.getenv("RIOT_API_KEY")
+    if key:
+        return key
+
+    env_candidates: list[Path] = []
+    env_override = os.getenv("PLAYER_POTENTIAL_ENV_FILE")
+    if env_override:
+        env_candidates.append(Path(env_override))
+
+    env_candidates.extend(
+        [
+            BASE_DIR / ".env",
+            Path.cwd() / ".env",
+            Path(__file__).resolve().parent / ".env",
+        ]
+    )
+
+    seen: set[Path] = set()
+    for env_file in env_candidates:
+        resolved = env_file.resolve()
+        if resolved in seen:
+            continue
+        seen.add(resolved)
+
+        if resolved.exists():
+            load_dotenv(resolved, override=False)
+            key = os.getenv("RIOT_API_KEY")
+            if key:
+                return key
+
+    raise KeyError(
+        "RIOT_API_KEY is not set. Set it as an environment variable, set PLAYER_POTENTIAL_ENV_FILE "
+        "to a .env path, or place a .env file in one of: "
+        f"{BASE_DIR / '.env'}, {Path.cwd() / '.env'}, {Path(__file__).resolve().parent / '.env'}."
+    )
+
+
+RIOT_API_KEY: str = _resolve_riot_api_key()
 
 # ── Riot API hosts ────────────────────────────────────────────────────────────
 PLATFORM_HOST  = f"https://{PLATFORM_REGION}.api.riotgames.com"   # League-V4, Summoner-V4
